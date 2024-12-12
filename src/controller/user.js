@@ -172,13 +172,6 @@ const resetPassword = async (req,res)=>{
 
 const Studentdetails = async (req, res) => {
     try {
-        const Teacher = await userModel.findOne({ email: req.body.TeacherEmail });
-        if (!Teacher) {
-            return res.status(404).send({
-                message: "Teacher not found"
-            });
-        }
-        
         const studentData = {
             StudentEmail: req.body.StudentEmail,
             English: req.body.English,
@@ -191,16 +184,27 @@ const Studentdetails = async (req, res) => {
 
         const Student = await TeacherModel.findOne({StudentEmail: req.body.StudentEmail})
         if (Student){
-            return res.status(404).send({
-                message: "Student already exist"
+            Student.StudentEmail= req.body.StudentEmail
+            Student.English= req.body.English
+            Student.Maths= req.body.Maths
+            Student.History= req.body.History
+            Student.Science= req.body.Science
+            Student.Geography=req.body.Geography
+            Student.TeacherEmail= req.body.TeacherEmail
+
+            await Student.save();
+            return res.status(200).send({
+                message: "Students mark updated successfully"
             });
         }
-        const newStudent = await TeacherModel.create(studentData);
+        else{
+            const newStudent = await TeacherModel.create(studentData);
 
-        res.status(200).send({
+            res.status(200).send({
             message: "Student details successfully saved",
             student: newStudent,
-        });
+            });
+        }
     } catch (error) {
 
         res.status(500).send({
@@ -211,17 +215,7 @@ const Studentdetails = async (req, res) => {
 
 const AttendanceDetails = async (req, res) => {
     try {
-      const user = await TeacherModel.findOne({ StudentEmail: req.body.StudentEmail });
-  
-     
-      if (!user) {
-        return res.status(402).send({
-          message: "Student not found"
-        });
-      }
-  
-   
-      const Attendance = {
+        const Attendance = {
         StudentEmail: req.body.StudentEmail,
         AttendancePercentage: req.body.attendancePercentage
       };
@@ -258,38 +252,45 @@ const AttendanceDetails = async (req, res) => {
   
 
   const TimetableDetails = async (req, res) => {
-    console.log(StudentEmail);
+    const { StudentEmail, timetable } = req.body; 
   
     try {
-  
+    
       if (!StudentEmail) {
         return res.status(400).json({ message: 'StudentEmail is required' });
       }
   
-   
+    
+      if (!timetable || timetable.length === 0) {
+        return res.status(400).json({ message: 'Timetable is required and cannot be empty' });
+      }
+  
+     
       let existingTimetable = await Timetable.findOne({ StudentEmail });
   
       if (existingTimetable) {
-    
+        
         existingTimetable.timetable = timetable;
         await existingTimetable.save();
         return res.status(200).json({ message: 'Timetable updated successfully' });
       }
   
- 
+     
       const newTimetable = new Timetable({
         StudentEmail,  
         timetable,   
       });
   
-      await newTimetable.save(); 
+      await newTimetable.save();
       return res.status(200).json({ message: 'Timetable saved successfully' });
-      
+  
     } catch (error) {
       console.error('Error saving timetable: ', error);
       res.status(500).json({ message: 'Error saving timetable' });
     }
   };
+  
+  
   const getDetails = async (req, res) => {
     try {
 
