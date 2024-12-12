@@ -290,11 +290,11 @@ const AttendanceDetails = async (req, res) => {
       res.status(500).json({ message: 'Error saving timetable' });
     }
   };
-
   const getDetails = async (req, res) => {
     try {
 
       const { StudentEmail } = req.query;
+  
 
       const timeTable = await Timetable.findOne({ StudentEmail });
       const Attendance = await attendanceModel.findOne({ StudentEmail });
