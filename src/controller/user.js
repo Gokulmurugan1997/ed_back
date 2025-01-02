@@ -217,7 +217,7 @@ const AttendanceDetails = async (req, res) => {
     try {
         const Attendance = {
         StudentEmail: req.body.StudentEmail,
-        AttendancePercentage: req.body.attendancePercentage
+        AttendancePercentage: req.body.AttendancePercentage
       };
   
     
@@ -225,7 +225,7 @@ const AttendanceDetails = async (req, res) => {
   
       if (student) {
   
-        student.AttendancePercentage = req.body.attendancePercentage;
+        student.AttendancePercentage = req.body.AttendancePercentage;
         await student.save();
   
         return res.status(200).json({
